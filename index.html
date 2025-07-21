@@ -1,1 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4CKHSH30E3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-4CKHSH30E3');
+    </script>
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="flex h-screen bg-gray-100 antialiased">
 
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white p-4 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col z-20 shadow-lg">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">History</h2>
+            <button id="sidebar-close-button" class="md:hidden p-2 rounded-full hover:bg-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" class="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <button id="new-chat-button" class="w-full mb-4 py-3 px-4 bg-blue-600 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 flex items-center justify-center space-x-2 shadow-md">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" class="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span>New Chat</span>
+        </button>
+        <div id="history-list" class="flex-1 overflow-y-auto">
+            <!-- Chat history items will be rendered here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="flex-1 flex flex-col">
+        <header class="bg-gradient-to-r from-blue-700 to-purple-700 text-white p-5 shadow-xl rounded-b-xl flex justify-between items-center">
+            <button id="sidebar-open-button" class="md:hidden p-2 rounded-full hover:bg-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" class="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+            <h1 class="text-3xl font-extrabold tracking-wide flex-grow text-center">AI Chatbot</h1>
+            <div class="w-6 md:hidden"></div> <!-- Spacer for mobile layout -->
+        </header>
+
+        <main id="chat-messages-container" class="flex-1 overflow-y-auto p-6 space-y-4 max-w-3xl mx-auto w-full">
+            <!-- Chat messages will be rendered here by JavaScript -->
+            <div id="initial-message" class="text-center text-gray-500 mt-20 p-4 bg-white rounded-lg shadow-md">
+                <p class="text-lg font-medium">Start a conversation!</p>
+                <p class="text-sm mt-2">Your chats will appear here and be saved to history.</p>
+            </div>
+        </main>
+
+        <footer class="p-4 bg-white shadow-2xl rounded-t-xl max-w-3xl mx-auto w-full">
+            <div id="staged-image-preview-container">
+                <!-- Staged image preview will be rendered here by JavaScript -->
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <!-- Hidden file input -->
+                <input type="file" id="file-input" class="hidden" accept="image/*">
+                <!-- Plus icon button to trigger file input -->
+                <button id="add-media-button" class="p-3 bg-gray-200 text-gray-600 rounded-full shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center" title="Add image">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
+                    </svg>
+                </button>
+
+                <textarea id="input-textarea" class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[48px] max-h-[150px] overflow-y-auto transition-all duration-200 ease-in-out shadow-inner focus:shadow-md" placeholder="Type your message..." rows="1"></textarea>
+                <button id="send-button" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                        <path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.542 60.542 0 0 0 18.443-8.688.75.75 0 0 0 0-1.129A60.542 60.542 0 0 0 3.478 2.405Z" />
+                    </svg>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Global state variables
+        let currentChatId = null;
+        let allChats = {}; // Stores { chatId: [messages] }
+        let messages = []; // Messages for the current active chat
+        let selectedImage = null; // Staged image
+        let isLoading = false;
+        let isProcessingImage = false;
+        let isSidebarOpen = false;
+
+        // DOM element references
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOpenButton = document.getElementById('sidebar-open-button');
+        const sidebarCloseButton = document.getElementById('sidebar-close-button');
+        const newChatButton = document.getElementById('new-chat-button');
+        const historyList = document.getElementById('history-list');
+        const chatMessagesContainer = document.getElementById('chat-messages-container');
+        const initialMessageDiv = document.getElementById('initial-message');
+        const stagedImagePreviewContainer = document.getElementById('staged-image-preview-container');
+        const fileInput = document.getElementById('file-input');
+        const addMediaButton = document.getElementById('add-media-button');
+        const inputTextarea = document.getElementById('input-textarea');
+        const sendButton = document.getElementById('send-button');
+
+        // Helper to generate a unique ID
+        const generateUUID = () => {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        };
+
+        // Scroll to the bottom of the chat
+        const scrollToBottom = () => {
+            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+        };
+
+        // Save chats to local storage
+        const saveChatsToLocalStorage = () => {
+            if (currentChatId) {
+                allChats[currentChatId] = messages;
+                localStorage.setItem('aiChatbotAllChats', JSON.stringify({
+                    currentChatId: currentChatId,
+                    chats: allChats
+                }));
+            }
+        };
+
+        // Function to handle new chat
+        const handleNewChat = () => {
+            const newId = generateUUID();
+            currentChatId = newId;
+            messages = []; // Clear messages for the new chat
+            selectedImage = null; // Clear any staged image
+            inputTextarea.value = ''; // Clear input
+            isSidebarOpen = false; // Close sidebar
+            renderAllUI(); // Re-render the UI
+        };
+
+        // Function to handle loading an existing chat
+        const handleLoadChat = (chatId) => {
+            if (allChats[chatId]) {
+                currentChatId = chatId;
+                messages = allChats[chatId];
+                selectedImage = null; // Clear any staged image
+                inputTextarea.value = ''; // Clear input
+                isSidebarOpen = false; // Close sidebar
+                renderAllUI(); // Re-render the UI
+            }
+        };
+
+        // Function to handle deleting a chat
+        const handleDeleteChat = (chatIdToDelete) => {
+            delete allChats[chatIdToDelete];
+
+            // If the deleted chat was the current one, switch to a new chat
+            if (currentChatId === chatIdToDelete) {
+                const remainingChatIds = Object.keys(allChats);
+                if (remainingChatIds.length > 0) {
+                    handleLoadChat(remainingChatIds[0]); // Load first available chat
+                } else {
+                    handleNewChat(); // No chats left, create a new one
+                }
+            }
+            renderAllUI(); // Re-render the UI
+        };
+
+        // Load chats from local storage
+        const loadChatsFromLocalStorage = () => {
+            try {
+                const storedData = localStorage.getItem('aiChatbotAllChats');
+                if (storedData) {
+                    const parsedData = JSON.parse(storedData);
+                    allChats = parsedData.chats || {};
+                    if (parsedData.currentChatId && allChats[parsedData.currentChatId]) {
+                        currentChatId = parsedData.currentChatId;
+                        messages = allChats[parsedData.currentChatId];
+                    } else {
+                        handleNewChat(); // If no current chat or invalid, create a new one
+                    }
+                } else {
+                    handleNewChat(); // No chats found, create the first one
+                }
+            } catch (error) {
+                console.error("Failed to load chats from localStorage:", error);
+                handleNewChat(); // Fallback to new chat on error
+            }
+            renderAllUI();
+        };
+
+        // Render functions to update UI based on state
+        const renderChatMessages = () => {
+            chatMessagesContainer.innerHTML = ''; // Clear current messages
+            if (messages.length === 0 && !isLoading) {
+                initialMessageDiv.style.display = 'block';
+                chatMessagesContainer.appendChild(initialMessageDiv);
+            } else {
+                initialMessageDiv.style.display = 'none';
+                messages.forEach((msg, index) => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`;
+
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = `max-w-[75%] p-4 rounded-xl shadow-md ${
+                        msg.role === 'user'
+                            ? 'bg-blue-500 text-white rounded-br-none'
+                            : 'bg-white text-gray-800 rounded-bl-none border border-gray-200'
+                    } break-words`;
+
+                    if ((msg.type === 'text' || msg.type === 'mixed') && msg.text) {
+                        const textContent = document.createElement('div');
+                        // Use marked.parse for Markdown rendering
+                        textContent.innerHTML = marked.parse(msg.text);
+                        contentDiv.appendChild(textContent);
+                    }
+
+                    if ((msg.type === 'image' || msg.type === 'mixed') && msg.data) {
+                        const img = document.createElement('img');
+                        img.src = msg.data;
+                        img.alt = "User uploaded";
+                        img.className = "max-w-full h-auto rounded-lg shadow-sm mt-2";
+                        img.onload = scrollToBottom;
+                        img.onerror = (e) => { e.target.onerror = null; e.target.src="https://placehold.co/150x150/cccccc/000000?text=Image+Error"; };
+                        contentDiv.appendChild(img);
+                    }
+                    messageDiv.appendChild(contentDiv);
+                    chatMessagesContainer.appendChild(messageDiv);
+                });
+            }
+            scrollToBottom();
+        };
+
+        const renderSidebar = () => {
+            historyList.innerHTML = '';
+            const chatIds = Object.keys(allChats);
+            if (chatIds.length === 0) {
+                const noHistory = document.createElement('p');
+                noHistory.className = "text-gray-400 text-sm";
+                noHistory.textContent = "No chat history yet.";
+                historyList.appendChild(noHistory);
+            } else {
+                chatIds.forEach(chatId => {
+                    const chatItem = document.createElement('div');
+                    chatItem.className = `flex items-center justify-between p-3 rounded-lg mb-2 cursor-pointer hover:bg-gray-700 transition duration-150 ${currentChatId === chatId ? 'bg-gray-700 ring-2 ring-blue-500' : 'bg-gray-600'}`;
+
+                    const chatTitleSpan = document.createElement('span');
+                    chatTitleSpan.className = "flex-1 text-sm truncate";
+                    chatTitleSpan.title = chatId;
+                    chatTitleSpan.textContent = allChats[chatId][0]?.text ? allChats[chatId][0].text.substring(0, 25) + '...' : `Chat ${chatId.substring(0, 8)}`;
+                    chatTitleSpan.onclick = () => handleLoadChat(chatId);
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = "ml-2 p-1 rounded-full hover:bg-red-500 text-gray-300 hover:text-white transition duration-150";
+                    deleteButton.title = "Delete Chat";
+                    deleteButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" class="w-5 h-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.927a2.25 2.25 0 01-2.244-2.077L4.747 6.75M9.257 4.5H15.75m-1.5 0H5.25c-.811 0-1.607.083-2.363.233A2.25 2.25 0 001.5 4.573V6.25c0 .58.287 1.128.743 1.465L5.75 9.75m0 0h12.5m0 0l-1.5 1.5m-1.5 1.5l-1.5 1.5M18.75 6.75v14.25c0 1.242-.968 2.25-2.167 2.25H7.417C6.218 23.25 5.25 22.242 5.25 21V6.75m13.5 0c.276 0 .5.224.5.5v.75" />
+                        </svg>
+                    `;
+                    deleteButton.onclick = (e) => { e.stopPropagation(); handleDeleteChat(chatId); };
+
+                    chatItem.appendChild(chatTitleSpan);
+                    chatItem.appendChild(deleteButton);
+                    historyList.appendChild(chatItem);
+                });
+            }
+        };
+
+        const renderStagedImagePreview = () => {
+            stagedImagePreviewContainer.innerHTML = '';
+            if (selectedImage) {
+                const previewDiv = document.createElement('div');
+                previewDiv.className = "relative mb-3 p-2 border border-gray-300 rounded-lg bg-gray-50 flex items-center justify-between";
+                previewDiv.innerHTML = `
+                    <img src="${selectedImage}" alt="Selected for input" class="max-h-24 rounded-md object-contain" />
+                    <button id="remove-staged-image-button" class="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500" title="Remove image">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" class="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                `;
+                stagedImagePreviewContainer.appendChild(previewDiv);
+                document.getElementById('remove-staged-image-button').onclick = () => {
+                    selectedImage = null;
+                    renderAllUI(); // Re-render to remove preview
+                };
+            }
+        };
+
+        const updateLoadingState = () => {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const processingImageIndicator = document.getElementById('processing-image-indicator');
+
+            if (isLoading) {
+                if (!loadingIndicator) {
+                    const div = document.createElement('div');
+                    div.id = 'loading-indicator';
+                    div.className = "flex justify-center mt-4";
+                    div.innerHTML = `
+                        <div class="flex items-center space-x-2 text-gray-600 bg-white p-3 rounded-lg shadow-md">
+                            <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                            <span class="font-medium">AI Chatbot is thinking...</span>
+                        </div>
+                    `;
+                    chatMessagesContainer.appendChild(div);
+                }
+            } else {
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
+            }
+
+            if (isProcessingImage) {
+                 if (!processingImageIndicator) {
+                    const div = document.createElement('div');
+                    div.id = 'processing-image-indicator';
+                    div.className = "flex justify-center mt-4";
+                    div.innerHTML = `
+                        <div class="flex items-center space-x-2 text-gray-600 bg-white p-3 rounded-lg shadow-md">
+                            <div class="w-5 h-5 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></div>
+                            <span class="font-medium">Processing image...</span>
+                        </div>
+                    `;
+                    chatMessagesContainer.appendChild(div);
+                }
+            } else {
+                if (processingImageIndicator) {
+                    processingImageIndicator.remove();
+                }
+            }
+
+            sendButton.disabled = isLoading || isProcessingImage || (!inputTextarea.value.trim() && !selectedImage);
+            inputTextarea.disabled = isLoading || isProcessingImage;
+            addMediaButton.disabled = isLoading || isProcessingImage;
+        };
+
+        const toggleSidebar = () => {
+            isSidebarOpen = !isSidebarOpen;
+            if (isSidebarOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebar.classList.add('translate-x-0');
+            } else {
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+            }
+        };
+
+        // Main render function to update all dynamic parts of the UI
+        const renderAllUI = () => {
+            renderChatMessages();
+            renderSidebar();
+            renderStagedImagePreview();
+            updateLoadingState();
+            saveChatsToLocalStorage(); // Save state after every UI update
+        };
+
+        // Function to handle sending messages to the API
+        const handleSendMessage = async () => {
+            const hasTextMessage = inputTextarea.value.trim().length > 0;
+            const hasStagedImage = selectedImage !== null;
+
+            if ((!hasTextMessage && !hasStagedImage) || isLoading || isProcessingImage) {
+                return;
+            }
+
+            isLoading = true;
+            renderAllUI(); // Show loading indicator immediately
+
+            let userMessageForDisplay = {
+                role: 'user',
+                timestamp: new Date().toISOString(),
+                text: hasTextMessage ? inputTextarea.value.trim() : '',
+                data: hasStagedImage ? selectedImage : null,
+                type: 'text',
+            };
+
+            if (hasTextMessage && hasStagedImage) {
+                userMessageForDisplay.type = 'mixed';
+            } else if (hasStagedImage) {
+                userMessageForDisplay.type = 'image';
+            }
+
+            // Add the user's message to the current chat's messages
+            messages.push(userMessageForDisplay);
+            renderAllUI(); // Render user message immediately
+
+            // Clear input and staged image after adding to messages
+            inputTextarea.value = '';
+            inputTextarea.style.height = 'auto'; // Reset textarea height
+            selectedImage = null;
+            renderAllUI(); // Update UI to clear input and staged image
+
+            // Prepare chat history for Gemini API call
+            const chatHistoryForApi = [];
+            messages.forEach(msg => {
+                if (msg.role === 'model') {
+                    chatHistoryForApi.push({ role: msg.role, parts: [{ text: msg.text }] });
+                } else if (msg.role === 'user') {
+                    const userParts = [];
+                    if (msg.type === 'text' || msg.type === 'mixed') {
+                        userParts.push({ text: msg.text });
+                    }
+                    if ((msg.type === 'image' || msg.type === 'mixed') && msg.data) {
+                        const base64Data = msg.data.split(',')[1];
+                        const mimeType = msg.data.split(',')[0].split(':')[1].split(';')[0];
+                        userParts.push({ inlineData: { mimeType: mimeType, data: base64Data } });
+                    }
+                    if (userParts.length > 0) {
+                        chatHistoryForApi.push({ role: msg.role, parts: userParts });
+                    }
+                }
+            });
+
+            const payload = { contents: chatHistoryForApi };
+          //Dont copy this.instead create you own for free in google ai studio.it is in free tier.
+            const apiKey = "AIzaSyBl5fGiL7eb8zvrZexCdO1oPVwtTQVm8L8"; // Canvas will automatically provide the API key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API error: ${response.status} - ${errorData.error?.message || response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                let geminiResponseText = "No response from AI Chatbot.";
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    geminiResponseText = result.candidates[0].content.parts[0].text;
+                } else {
+                    console.warn("Unexpected Gemini API response structure:", result);
+                }
+
+                const geminiMessage = {
+                    role: 'model',
+                    type: 'text',
+                    text: geminiResponseText,
+                    timestamp: new Date().toISOString()
+                };
+
+                messages.push(geminiMessage);
+                renderAllUI(); // Render Gemini's response
+
+            } catch (error) {
+                console.error("Error sending message or getting Gemini response:", error);
+                const errorMessage = {
+                    role: 'model',
+                    type: 'text',
+                    text: `Error: Could not get a response. ${error.message}`,
+                    timestamp: new Date().toISOString()
+                };
+                messages.push(errorMessage);
+                renderAllUI(); // Render error message
+            } finally {
+                isLoading = false;
+                renderAllUI(); // Hide loading indicator
+            }
+        };
+
+        // Event Handlers
+        newChatButton.addEventListener('click', handleNewChat);
+        sidebarOpenButton.addEventListener('click', toggleSidebar);
+        sidebarCloseButton.addEventListener('click', toggleSidebar);
+
+        addMediaButton.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (event) => {
+            const files = event.target.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (!file.type.startsWith('image/')) {
+                    console.warn("Selected file is not an image:", file.type);
+                    alert("Please select an image file.");
+                    return;
+                }
+
+                isProcessingImage = true;
+                renderAllUI(); // Update UI to show processing indicator
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    selectedImage = reader.result; // Stage the image
+                    isProcessingImage = false;
+                    fileInput.value = null; // Clear input value
+                    renderAllUI(); // Re-render to show staged image
+                };
+                reader.onerror = (error) => {
+                    console.error("Error reading file:", error);
+                    alert("Failed to read image file.");
+                    isProcessingImage = false;
+                    fileInput.value = null;
+                    renderAllUI(); // Re-render to hide processing indicator
+                };
+                reader.readAsDataURL(file); // Read file as Base64 Data URL
+            }
+        });
+
+        inputTextarea.addEventListener('input', () => {
+            inputTextarea.style.height = 'auto';
+            inputTextarea.style.height = inputTextarea.scrollHeight + 'px';
+            updateLoadingState(); // Update send button state
+        });
+
+        inputTextarea.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+            }
+        });
+
+        sendButton.addEventListener('click', handleSendMessage);
+
+        // Initialize the application on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', loadChatsFromLocalStorage);
+    </script>
+</body>
+</html>
