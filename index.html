@@ -143,7 +143,8 @@
         let isLoading = false;
         let isProcessingImage = false;
         let isSidebarOpen = false;
-        let isRecording = false; // New state for microphone recording
+        let isRecording = false; // State for microphone recording
+        let isVoiceInputActive = false; // New: Flag to track if last input was voice
 
         // Web Speech API variables
         let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -209,6 +210,7 @@
             selectedImage = null; // Clear any staged image
             inputTextarea.value = ''; // Clear input
             isSidebarOpen = false; // Close sidebar
+            isVoiceInputActive = false; // Reset voice input flag
             renderAllUI(); // Re-render the UI
         };
 
@@ -220,6 +222,7 @@
                 selectedImage = null; // Clear any staged image
                 inputTextarea.value = ''; // Clear input
                 isSidebarOpen = false; // Close sidebar
+                isVoiceInputActive = false; // Reset voice input flag
                 renderAllUI(); // Re-render the UI
             }
         };
@@ -553,8 +556,10 @@
                 messages.push(geminiMessage);
                 renderAllUI(); // Render Gemini's response
 
-                // Speak the AI's response
-                speakText(geminiResponseText);
+                // Speak the AI's response ONLY if the last input was from voice
+                if (isVoiceInputActive) {
+                    speakText(geminiResponseText);
+                }
 
             } catch (error) {
                 console.error("Error sending message or getting Gemini response:", error);
@@ -566,7 +571,10 @@
                 };
                 messages.push(errorMessage);
                 renderAllUI(); // Render error message
-                speakText(`Error: ${error.message}`); // Speak the error
+                // Speak the error only if voice input was active
+                if (isVoiceInputActive) {
+                    speakText(`Error: ${error.message}`);
+                }
             } finally {
                 isLoading = false;
                 renderAllUI(); // Hide loading indicator
@@ -591,6 +599,7 @@
 
             recognition.onstart = () => {
                 isRecording = true;
+                isVoiceInputActive = true; // Set flag when voice input starts
                 inputTextarea.placeholder = "Listening...";
                 inputTextarea.value = ''; // Clear input area on start
                 renderAllUI();
@@ -611,6 +620,7 @@
                 console.error('Speech recognition error:', event.error);
                 alert(`Speech recognition error: ${event.error}. Please ensure microphone access is granted.`);
                 isRecording = false;
+                isVoiceInputActive = false; // Reset flag on error
                 inputTextarea.placeholder = "Type your message...";
                 renderAllUI();
             };
@@ -618,6 +628,7 @@
             recognition.onend = () => {
                 if (isRecording) { // If it ended without a result (e.g., silence)
                     isRecording = false;
+                    isVoiceInputActive = false; // Reset flag if recognition ends without result
                     inputTextarea.placeholder = "Type your message...";
                     renderAllUI();
                 }
@@ -629,6 +640,7 @@
                 console.error("Error starting speech recognition:", e);
                 alert("Could not start speech recognition. Please check microphone permissions.");
                 isRecording = false;
+                isVoiceInputActive = false; // Reset flag on error
                 inputTextarea.placeholder = "Type your message...";
                 renderAllUI();
             }
@@ -670,7 +682,10 @@
         sidebarCloseButton.addEventListener('click', toggleSidebar);
         micButton.addEventListener('click', startRecognition); // Attach to mic button
 
-        addMediaButton.addEventListener('click', () => fileInput.click());
+        addMediaButton.addEventListener('click', () => {
+            isVoiceInputActive = false; // Reset flag when media button is clicked
+            fileInput.click();
+        });
         fileInput.addEventListener('change', (event) => {
             const files = event.target.files;
             if (files.length > 0) {
@@ -704,6 +719,7 @@
         inputTextarea.addEventListener('input', () => {
             inputTextarea.style.height = 'auto';
             inputTextarea.style.height = inputTextarea.scrollHeight + 'px';
+            isVoiceInputActive = false; // Reset flag when text is manually typed
             updateLoadingState(); // Update send button state
         });
 
