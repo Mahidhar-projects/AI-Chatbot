@@ -4,6 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Chatbot</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="An interactive AI Chatbot that supports text and voice input, image uploads, and saves chat history.">
+    <meta name="keywords" content="AI chatbot, conversational AI, voice input, image upload, chat history, generative AI, natural language processing, mahidhar AI Chatbot">
+    <link rel="canonical" href="https://mahidhar-projects.github.io/AI-Chatbot/">
+
+    <!-- Open Graph / Facebook / LinkedIn -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mahidhar-projects.github.io/AI-Chatbot/">
+    <meta property="og:title" content="AI Chatbot - Your Smart Conversational Assistant">
+    <meta property="og:description" content="An interactive AI Chatbot that supports text and voice input, image uploads, and saves chat history.">
+    <meta property="og:image" content="https://mahidhar-projects.github.io/AI-Chatbot/preview.png"> <!-- Replace with an actual preview image URL if you have one -->
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://mahidhar-projects.github.io/AI-Chatbot/">
+    <meta property="twitter:title" content="AI Chatbot - Your Smart Conversational Assistant">
+    <meta property="twitter:description" content="An interactive AI Chatbot that supports text and voice input, image uploads, and saves chat history.">
+    <meta property="twitter:image" content="https://mahidhar-projects.github.io/AI-Chatbot/preview.png"> <!-- Replace with an actual preview image URL if you have one -->
+
+    <!-- Favicon -->
+    <link rel="icon" href="https://mahidhar-projects.github.io/AI-Chatbot/favicon.ico" type="image/x-icon"> <!-- Replace with your actual favicon URL -->
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google tag (gtag.js) -->
@@ -49,7 +72,7 @@
                 </svg>
             </button>
         </div>
-        <button id="new-chat-button" class="w-full mb-4 py-3 px-4 bg-blue-600 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 flex items-center justify-center space-x-2 shadow-md">
+        <button id="new-chat-button" class="w-full mb-4 py-3 px-4 bg-indigo-600 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200 flex items-center justify-center space-x-2 shadow-md">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" class="w-5 h-5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
@@ -62,8 +85,8 @@
 
     <!-- Main Chat Area -->
     <div class="flex-1 flex flex-col">
-        <header class="bg-gradient-to-r from-blue-700 to-purple-700 text-white p-5 shadow-xl rounded-b-xl flex justify-between items-center">
-            <button id="sidebar-open-button" class="md:hidden p-2 rounded-full hover:bg-blue-600">
+        <header class="bg-gradient-to-r from-teal-500 to-blue-600 text-white p-5 shadow-xl rounded-b-xl flex justify-between items-center">
+            <button id="sidebar-open-button" class="md:hidden p-2 rounded-full hover:bg-teal-600">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" class="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                 </svg>
@@ -74,9 +97,9 @@
 
         <main id="chat-messages-container" class="flex-1 overflow-y-auto p-6 space-y-4 max-w-3xl mx-auto w-full">
             <!-- Chat messages will be rendered here by JavaScript -->
-            <div id="initial-message" class="text-center text-gray-500 mt-20 p-4 bg-white rounded-lg shadow-md">
-                <p class="text-lg font-medium">Start a conversation!</p>
-                <p class="text-sm mt-2">Your chats will appear here and be saved to history.</p>
+            <div id="initial-message" class="text-center text-gray-500 mt-20 p-4 bg-white rounded-lg shadow-md border border-gray-200">
+                <h2 class="text-xl font-bold text-gray-700 mb-2">Welcome to AI Chatbot!</h2>
+                <p class="text-base">Start a conversation by typing a message below.</p>
             </div>
         </main>
 
@@ -92,6 +115,12 @@
                 <button id="add-media-button" class="p-3 bg-gray-200 text-gray-600 rounded-full shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center" title="Add image">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
                         <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
+                    </svg>
+                </button>
+
+                <button id="mic-button" class="p-3 bg-purple-500 text-white rounded-full shadow-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center" title="Voice Input">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                        <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.2-3c0 3.53-2.64 6.4-6.2 6.73V21h-1.5v-3.27C6.44 17.4 3.8 14.53 3.8 11H2c0 3.98 3.15 7.22 7.07 7.68V21h4.28v-3.32c3.92-.46 7.07-3.7 7.07-7.68h-1.7zm-4.39-2.81l-1.41 1.41-2.83-2.83 1.41-1.41 2.83 2.83z"/>
                     </svg>
                 </button>
 
@@ -114,6 +143,13 @@
         let isLoading = false;
         let isProcessingImage = false;
         let isSidebarOpen = false;
+        let isRecording = false; // New state for microphone recording
+
+        // Web Speech API variables
+        let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let SpeechSynthesisUtterance = window.SpeechSynthesisUtterance;
+        let recognition = null;
+        let synth = window.speechSynthesis;
 
         // DOM element references
         const sidebar = document.getElementById('sidebar');
@@ -126,6 +162,7 @@
         const stagedImagePreviewContainer = document.getElementById('staged-image-preview-container');
         const fileInput = document.getElementById('file-input');
         const addMediaButton = document.getElementById('add-media-button');
+        const micButton = document.getElementById('mic-button'); // New microphone button
         const inputTextarea = document.getElementById('input-textarea');
         const sendButton = document.getElementById('send-button');
 
@@ -135,6 +172,17 @@
                 const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
+        };
+
+        // Function to format timestamp
+        const formatTimestamp = (isoString) => {
+            const date = new Date(isoString);
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const formattedHours = hours % 12 || 12; // 12-hour format
+            const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+            return `${formattedHours}:${formattedMinutes} ${ampm}`;
         };
 
         // Scroll to the bottom of the chat
@@ -178,6 +226,11 @@
 
         // Function to handle deleting a chat
         const handleDeleteChat = (chatIdToDelete) => {
+            // Confirm deletion
+            if (!confirm("Are you sure you want to delete this chat?")) {
+                return;
+            }
+
             delete allChats[chatIdToDelete];
 
             // If the deleted chat was the current one, switch to a new chat
@@ -224,19 +277,25 @@
             } else {
                 initialMessageDiv.style.display = 'none';
                 messages.forEach((msg, index) => {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = `flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`;
+                    const messageWrapper = document.createElement('div');
+                    messageWrapper.className = `flex items-start space-x-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`;
+
+                    // Avatar
+                    const avatarDiv = document.createElement('div');
+                    avatarDiv.className = `flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                        msg.role === 'user' ? 'bg-blue-500 text-white order-2' : 'bg-gray-400 text-gray-900 order-1'
+                    }`;
+                    avatarDiv.textContent = msg.role === 'user' ? 'You' : 'AI';
 
                     const contentDiv = document.createElement('div');
                     contentDiv.className = `max-w-[75%] p-4 rounded-xl shadow-md ${
                         msg.role === 'user'
                             ? 'bg-blue-500 text-white rounded-br-none'
-                            : 'bg-white text-gray-800 rounded-bl-none border border-gray-200'
+                            : 'bg-gray-200 text-gray-800 rounded-bl-none border border-gray-300'
                     } break-words`;
 
                     if ((msg.type === 'text' || msg.type === 'mixed') && msg.text) {
                         const textContent = document.createElement('div');
-                        // Use marked.parse for Markdown rendering
                         textContent.innerHTML = marked.parse(msg.text);
                         contentDiv.appendChild(textContent);
                     }
@@ -250,8 +309,21 @@
                         img.onerror = (e) => { e.target.onerror = null; e.target.src="https://placehold.co/150x150/cccccc/000000?text=Image+Error"; };
                         contentDiv.appendChild(img);
                     }
-                    messageDiv.appendChild(contentDiv);
-                    chatMessagesContainer.appendChild(messageDiv);
+
+                    // Timestamp
+                    const timestampSpan = document.createElement('span');
+                    timestampSpan.className = `text-xs mt-1 ${msg.role === 'user' ? 'text-blue-200' : 'text-gray-500'} block text-right`;
+                    timestampSpan.textContent = formatTimestamp(msg.timestamp);
+                    contentDiv.appendChild(timestampSpan);
+
+                    if (msg.role === 'user') {
+                        messageWrapper.appendChild(contentDiv);
+                        messageWrapper.appendChild(avatarDiv);
+                    } else {
+                        messageWrapper.appendChild(avatarDiv);
+                        messageWrapper.appendChild(contentDiv);
+                    }
+                    chatMessagesContainer.appendChild(messageWrapper);
                 });
             }
             scrollToBottom();
@@ -262,7 +334,7 @@
             const chatIds = Object.keys(allChats);
             if (chatIds.length === 0) {
                 const noHistory = document.createElement('p');
-                noHistory.className = "text-gray-400 text-sm";
+                noHistory.className = "text-gray-400 text-sm p-3 text-center";
                 noHistory.textContent = "No chat history yet.";
                 historyList.appendChild(noHistory);
             } else {
@@ -272,8 +344,8 @@
 
                     const chatTitleSpan = document.createElement('span');
                     chatTitleSpan.className = "flex-1 text-sm truncate";
-                    chatTitleSpan.title = chatId;
-                    chatTitleSpan.textContent = allChats[chatId][0]?.text ? allChats[chatId][0].text.substring(0, 25) + '...' : `Chat ${chatId.substring(0, 8)}`;
+                    chatTitleSpan.title = allChats[chatId][0]?.text || `Chat ${chatId.substring(0, 8)}`; // Show full text on hover
+                    chatTitleSpan.textContent = allChats[chatId][0]?.text ? allChats[chatId][0].text.substring(0, 25) + (allChats[chatId][0].text.length > 25 ? '...' : '') : `Chat ${chatId.substring(0, 8)}`;
                     chatTitleSpan.onclick = () => handleLoadChat(chatId);
 
                     const deleteButton = document.createElement('button');
@@ -356,9 +428,14 @@
                 }
             }
 
-            sendButton.disabled = isLoading || isProcessingImage || (!inputTextarea.value.trim() && !selectedImage);
-            inputTextarea.disabled = isLoading || isProcessingImage;
-            addMediaButton.disabled = isLoading || isProcessingImage;
+            // Disable input and buttons based on state
+            const disableAll = isLoading || isProcessingImage || isRecording;
+            sendButton.disabled = disableAll || (!inputTextarea.value.trim() && !selectedImage);
+            inputTextarea.disabled = disableAll;
+            addMediaButton.disabled = disableAll;
+            micButton.disabled = isLoading || isProcessingImage; // Mic button disabled only during AI thinking or image processing
+            micButton.classList.toggle('bg-purple-500', !isRecording); // Updated color for mic button off state
+            micButton.classList.toggle('bg-pink-500', isRecording); // Updated color for mic button on state
         };
 
         const toggleSidebar = () => {
@@ -421,7 +498,7 @@
             const chatHistoryForApi = [];
             messages.forEach(msg => {
                 if (msg.role === 'model') {
-                    chatHistoryForApi.push({ role: msg.role, parts: [{ text: msg.text }] });
+                    chatHistoryForApi.push({ role: msg.text ? msg.role : 'user', parts: [{ text: msg.text }] }); // Ensure text part is present
                 } else if (msg.role === 'user') {
                     const userParts = [];
                     if (msg.type === 'text' || msg.type === 'mixed') {
@@ -439,8 +516,8 @@
             });
 
             const payload = { contents: chatHistoryForApi };
-          //Dont copy this.instead create you own for free in google ai studio.it is in free tier.
-            const apiKey = "AIzaSyBl5fGiL7eb8zvrZexCdO1oPVwtTQVm8L8"; // Canvas will automatically provide the API key
+//Dont copy this.instead create you own for free in google ai studio.it is in free tier.
+            const apiKey = "AIzaSyBl5fGiL7eb8zvrZexCdO1oPVwtTQVm8L8";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
             try {
@@ -476,6 +553,9 @@
                 messages.push(geminiMessage);
                 renderAllUI(); // Render Gemini's response
 
+                // Speak the AI's response
+                speakText(geminiResponseText);
+
             } catch (error) {
                 console.error("Error sending message or getting Gemini response:", error);
                 const errorMessage = {
@@ -486,16 +566,109 @@
                 };
                 messages.push(errorMessage);
                 renderAllUI(); // Render error message
+                speakText(`Error: ${error.message}`); // Speak the error
             } finally {
                 isLoading = false;
                 renderAllUI(); // Hide loading indicator
             }
         };
 
-        // Event Handlers
+        // Speech Recognition (Voice Input) Logic
+        const startRecognition = () => {
+            if (!SpeechRecognition) {
+                alert("Speech Recognition not supported in this browser. Please use Chrome or Edge.");
+                return;
+            }
+
+            if (recognition) {
+                recognition.stop(); // Stop any ongoing recognition
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false; // Only return final results
+            recognition.maxAlternatives = 1; // Get the most likely result
+
+            recognition.onstart = () => {
+                isRecording = true;
+                inputTextarea.placeholder = "Listening...";
+                inputTextarea.value = ''; // Clear input area on start
+                renderAllUI();
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                inputTextarea.value = transcript;
+                inputTextarea.dispatchEvent(new Event('input')); // Trigger input event to resize textarea
+                isRecording = false;
+                inputTextarea.placeholder = "Type your message...";
+                renderAllUI();
+                // Automatically send message after recognition
+                handleSendMessage();
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                alert(`Speech recognition error: ${event.error}. Please ensure microphone access is granted.`);
+                isRecording = false;
+                inputTextarea.placeholder = "Type your message...";
+                renderAllUI();
+            };
+
+            recognition.onend = () => {
+                if (isRecording) { // If it ended without a result (e.g., silence)
+                    isRecording = false;
+                    inputTextarea.placeholder = "Type your message...";
+                    renderAllUI();
+                }
+            };
+
+            try {
+                recognition.start();
+            } catch (e) {
+                console.error("Error starting speech recognition:", e);
+                alert("Could not start speech recognition. Please check microphone permissions.");
+                isRecording = false;
+                inputTextarea.placeholder = "Type your message...";
+                renderAllUI();
+            }
+        };
+
+        // Speech Synthesis (Voice Output) Logic
+        const speakText = (text) => {
+            if (!SpeechSynthesisUtterance || !synth) {
+                console.warn("Speech Synthesis not supported in this browser.");
+                return;
+            }
+
+            // Stop any ongoing speech
+            synth.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US'; // Set language
+            utterance.rate = 1; // Speed of speech
+            utterance.pitch = 1; // Pitch of voice
+
+            // Optional: Choose a specific voice if available
+            // let voices = synth.getVoices();
+            // let selectedVoice = voices.find(voice => voice.name === 'Google US English'); // Example
+            // if (selectedVoice) {
+            //     utterance.voice = selectedVoice;
+            // }
+
+            utterance.onerror = (event) => {
+                console.error('Speech synthesis error:', event.error);
+            };
+
+            synth.speak(utterance);
+        };
+
+
+        // Event Listeners
         newChatButton.addEventListener('click', handleNewChat);
         sidebarOpenButton.addEventListener('click', toggleSidebar);
         sidebarCloseButton.addEventListener('click', toggleSidebar);
+        micButton.addEventListener('click', startRecognition); // Attach to mic button
 
         addMediaButton.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (event) => {
