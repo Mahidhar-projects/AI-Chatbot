@@ -29,6 +29,19 @@
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configure Tailwind CSS for dark mode
+        tailwind.config = {
+            darkMode: 'class', // Enable dark mode based on 'dark' class on <html>
+            theme: {
+                extend: {
+                    colors: {
+                        // Define custom colors or extend existing ones if needed
+                    }
+                }
+            }
+        }
+    </script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-4CKHSH30E3"></script>
     <script>
@@ -51,22 +64,31 @@
             background: #f1f1f1;
             border-radius: 10px;
         }
+        .dark ::-webkit-scrollbar-track {
+            background: #333;
+        }
         ::-webkit-scrollbar-thumb {
             background: #888;
             border-radius: 10px;
         }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #555;
+        }
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
     </style>
 </head>
-<body class="flex h-screen bg-gray-100 antialiased">
+<body class="flex h-screen bg-gray-100 antialiased dark:bg-gray-900 dark:text-gray-100">
 
     <!-- Sidebar -->
-    <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white p-4 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col z-20 shadow-lg">
+    <div id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white p-4 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col z-20 shadow-lg dark:bg-gray-950">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold">History</h2>
-            <button id="sidebar-close-button" class="md:hidden p-2 rounded-full hover:bg-gray-700">
+            <button id="sidebar-close-button" class="md:hidden p-2 rounded-full hover:bg-gray-700 dark:hover:bg-gray-800">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" class="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -78,6 +100,12 @@
             </svg>
             <span>New Chat</span>
         </button>
+
+        <!-- Search History Input -->
+        <div class="mb-4">
+            <input type="text" id="search-history-input" placeholder="Search chats..." class="w-full p-2 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700">
+        </div>
+
         <div id="history-list" class="flex-1 overflow-y-auto">
             <!-- Chat history items will be rendered here by JavaScript -->
         </div>
@@ -92,18 +120,35 @@
                 </svg>
             </button>
             <h1 class="text-3xl font-extrabold tracking-wide flex-grow text-center">AI Chatbot</h1>
-            <div class="w-6 md:hidden"></div> <!-- Spacer for mobile layout -->
+            <div class="flex items-center space-x-3">
+                <!-- Language Selector -->
+                <select id="language-select" class="bg-teal-600 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white dark:bg-blue-700">
+                    <option value="en-US">English</option>
+                    <option value="es-ES">Español</option>
+                    <!-- Add more languages as needed -->
+                </select>
+
+                <!-- Dark Mode Toggle -->
+                <button id="dark-mode-toggle" class="p-2 rounded-full bg-teal-600 hover:bg-teal-700 text-white focus:outline-none focus:ring-2 focus:ring-white dark:bg-blue-700 dark:hover:bg-blue-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" class="w-6 h-6 sun-icon">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h1M3 12H2m15.325-4.725l-.707-.707M6.382 6.382l-.707-.707M17.617 17.617l-.707.707M6.382 17.617l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" class="w-6 h-6 moon-icon hidden">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25c0 5.385 4.365 9.75 9.75 9.75 2.012 0 3.904-.623 5.463-1.698z" />
+                    </svg>
+                </button>
+            </div>
         </header>
 
-        <main id="chat-messages-container" class="flex-1 overflow-y-auto p-6 space-y-4 max-w-3xl mx-auto w-full">
+        <main id="chat-messages-container" class="flex-1 overflow-y-auto p-6 space-y-4 max-w-3xl mx-auto w-full bg-gray-100 dark:bg-gray-800">
             <!-- Chat messages will be rendered here by JavaScript -->
-            <div id="initial-message" class="text-center text-gray-500 mt-20 p-4 bg-white rounded-lg shadow-md border border-gray-200">
-                <h2 class="text-xl font-bold text-gray-700 mb-2">Welcome to AI Chatbot!</h2>
+            <div id="initial-message" class="text-center text-gray-500 mt-20 p-4 bg-white rounded-lg shadow-md border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300">
+                <h2 class="text-xl font-bold text-gray-700 mb-2 dark:text-gray-100">Welcome to AI Chatbot!</h2>
                 <p class="text-base">Start a conversation by typing a message below.</p>
             </div>
         </main>
 
-        <footer class="p-4 bg-white shadow-2xl rounded-t-xl max-w-3xl mx-auto w-full">
+        <footer class="p-4 bg-white shadow-2xl rounded-t-xl max-w-3xl mx-auto w-full dark:bg-gray-900">
             <div id="staged-image-preview-container">
                 <!-- Staged image preview will be rendered here by JavaScript -->
             </div>
@@ -112,19 +157,19 @@
                 <!-- Hidden file input -->
                 <input type="file" id="file-input" class="hidden" accept="image/*">
                 <!-- Plus icon button to trigger file input -->
-                <button id="add-media-button" class="p-3 bg-gray-200 text-gray-600 rounded-full shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center" title="Add image">
+                <button id="add-media-button" class="p-3 bg-gray-200 text-gray-600 rounded-full shadow-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600" title="Add image">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
                         <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
                     </svg>
                 </button>
 
-                <button id="mic-button" class="p-3 bg-purple-500 text-white rounded-full shadow-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center" title="Voice Input">
+                <button id="mic-button" class="p-3 bg-purple-500 text-white rounded-full shadow-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
                         <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.2-3c0 3.53-2.64 6.4-6.2 6.73V21h-1.5v-3.27C6.44 17.4 3.8 14.53 3.8 11H2c0 3.98 3.15 7.22 7.07 7.68V21h4.28v-3.32c3.92-.46 7.07-3.7 7.07-7.68h-1.7zm-4.39-2.81l-1.41 1.41-2.83-2.83 1.41-1.41 2.83 2.83z"/>
                     </svg>
                 </button>
 
-                <textarea id="input-textarea" class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[48px] max-h-[150px] overflow-y-auto transition-all duration-200 ease-in-out shadow-inner focus:shadow-md" placeholder="Type your message..." rows="1"></textarea>
+                <textarea id="input-textarea" class="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none min-h-[48px] max-h-[96px] overflow-y-auto transition-all duration-200 ease-in-out shadow-inner focus:shadow-md dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100" placeholder="Type your message..." rows="1"></textarea>
                 <button id="send-button" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                         <path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.542 60.542 0 0 0 18.443-8.688.75.75 0 0 0 0-1.129A60.542 60.542 0 0 0 3.478 2.405Z" />
@@ -144,7 +189,7 @@
         let isProcessingImage = false;
         let isSidebarOpen = false;
         let isRecording = false; // State for microphone recording
-        let isVoiceInputActive = false; // New: Flag to track if last input was voice
+        let isVoiceInputActive = false; // Flag to track if last input was voice
 
         // Web Speech API variables
         let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -166,6 +211,11 @@
         const micButton = document.getElementById('mic-button'); // New microphone button
         const inputTextarea = document.getElementById('input-textarea');
         const sendButton = document.getElementById('send-button');
+        const searchHistoryInput = document.getElementById('search-history-input'); // New search input
+        const languageSelect = document.getElementById('language-select'); // New language select
+        const darkModeToggle = document.getElementById('dark-mode-toggle'); // New dark mode toggle
+        const sunIcon = darkModeToggle.querySelector('.sun-icon');
+        const moonIcon = darkModeToggle.querySelector('.moon-icon');
 
         // Helper to generate a unique ID
         const generateUUID = () => {
@@ -286,15 +336,15 @@
                     // Avatar
                     const avatarDiv = document.createElement('div');
                     avatarDiv.className = `flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                        msg.role === 'user' ? 'bg-blue-500 text-white order-2' : 'bg-gray-400 text-gray-900 order-1'
+                        msg.role === 'user' ? 'bg-blue-500 text-white order-2' : 'bg-gray-400 text-gray-900 order-1 dark:bg-gray-600 dark:text-gray-100'
                     }`;
                     avatarDiv.textContent = msg.role === 'user' ? 'You' : 'AI';
 
                     const contentDiv = document.createElement('div');
                     contentDiv.className = `max-w-[75%] p-4 rounded-xl shadow-md ${
                         msg.role === 'user'
-                            ? 'bg-blue-500 text-white rounded-br-none'
-                            : 'bg-gray-200 text-gray-800 rounded-bl-none border border-gray-300'
+                            ? 'bg-blue-500 text-white rounded-br-none dark:bg-blue-700'
+                            : 'bg-gray-200 text-gray-800 rounded-bl-none border border-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
                     } break-words`;
 
                     if ((msg.type === 'text' || msg.type === 'mixed') && msg.text) {
@@ -315,9 +365,31 @@
 
                     // Timestamp
                     const timestampSpan = document.createElement('span');
-                    timestampSpan.className = `text-xs mt-1 ${msg.role === 'user' ? 'text-blue-200' : 'text-gray-500'} block text-right`;
+                    timestampSpan.className = `text-xs mt-1 ${msg.role === 'user' ? 'text-blue-200 dark:text-blue-300' : 'text-gray-500 dark:text-gray-400'} block text-right`;
                     timestampSpan.textContent = formatTimestamp(msg.timestamp);
                     contentDiv.appendChild(timestampSpan);
+
+                    // Delete button for user messages
+                    if (msg.role === 'user') {
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className = "absolute top-1 right-1 p-1 rounded-full bg-red-500 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200";
+                        deleteButton.title = "Delete message";
+                        deleteButton.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" class="w-4 h-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        `;
+                        deleteButton.onclick = (e) => {
+                            e.stopPropagation();
+                            if (confirm("Are you sure you want to delete this message?")) {
+                                messages.splice(index, 1); // Remove message by index
+                                renderAllUI();
+                            }
+                        };
+                        contentDiv.classList.add('relative', 'group'); // Add group class for hover effect
+                        contentDiv.appendChild(deleteButton);
+                    }
+
 
                     if (msg.role === 'user') {
                         messageWrapper.appendChild(contentDiv);
@@ -334,16 +406,21 @@
 
         const renderSidebar = () => {
             historyList.innerHTML = '';
-            const chatIds = Object.keys(allChats);
-            if (chatIds.length === 0) {
+            const searchTerm = searchHistoryInput.value.toLowerCase();
+            const filteredChatIds = Object.keys(allChats).filter(chatId => {
+                const firstMessageText = allChats[chatId][0]?.text?.toLowerCase() || '';
+                return firstMessageText.includes(searchTerm);
+            });
+
+            if (filteredChatIds.length === 0) {
                 const noHistory = document.createElement('p');
                 noHistory.className = "text-gray-400 text-sm p-3 text-center";
-                noHistory.textContent = "No chat history yet.";
+                noHistory.textContent = "No chat history yet or no results found.";
                 historyList.appendChild(noHistory);
             } else {
-                chatIds.forEach(chatId => {
+                filteredChatIds.forEach(chatId => {
                     const chatItem = document.createElement('div');
-                    chatItem.className = `flex items-center justify-between p-3 rounded-lg mb-2 cursor-pointer hover:bg-gray-700 transition duration-150 ${currentChatId === chatId ? 'bg-gray-700 ring-2 ring-blue-500' : 'bg-gray-600'}`;
+                    chatItem.className = `flex items-center justify-between p-3 rounded-lg mb-2 cursor-pointer hover:bg-gray-700 transition duration-150 ${currentChatId === chatId ? 'bg-gray-700 ring-2 ring-blue-500' : 'bg-gray-600'} dark:hover:bg-gray-800 dark:bg-gray-800 ${currentChatId === chatId ? 'dark:ring-blue-500' : ''}`;
 
                     const chatTitleSpan = document.createElement('span');
                     chatTitleSpan.className = "flex-1 text-sm truncate";
@@ -372,7 +449,7 @@
             stagedImagePreviewContainer.innerHTML = '';
             if (selectedImage) {
                 const previewDiv = document.createElement('div');
-                previewDiv.className = "relative mb-3 p-2 border border-gray-300 rounded-lg bg-gray-50 flex items-center justify-between";
+                previewDiv.className = "relative mb-3 p-2 border border-gray-300 rounded-lg bg-gray-50 flex items-center justify-between dark:bg-gray-700 dark:border-gray-600";
                 previewDiv.innerHTML = `
                     <img src="${selectedImage}" alt="Selected for input" class="max-h-24 rounded-md object-contain" />
                     <button id="remove-staged-image-button" class="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500" title="Remove image">
@@ -390,8 +467,8 @@
         };
 
         const updateLoadingState = () => {
-            const loadingIndicator = document.getElementById('loading-indicator');
-            const processingImageIndicator = document.getElementById('processing-image-indicator');
+            let loadingIndicator = document.getElementById('loading-indicator');
+            let processingImageIndicator = document.getElementById('processing-image-indicator');
 
             if (isLoading) {
                 if (!loadingIndicator) {
@@ -399,7 +476,7 @@
                     div.id = 'loading-indicator';
                     div.className = "flex justify-center mt-4";
                     div.innerHTML = `
-                        <div class="flex items-center space-x-2 text-gray-600 bg-white p-3 rounded-lg shadow-md">
+                        <div class="flex items-center space-x-2 text-gray-600 bg-white p-3 rounded-lg shadow-md dark:bg-gray-700 dark:text-gray-300">
                             <div class="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                             <span class="font-medium">AI Chatbot is thinking...</span>
                         </div>
@@ -418,7 +495,7 @@
                     div.id = 'processing-image-indicator';
                     div.className = "flex justify-center mt-4";
                     div.innerHTML = `
-                        <div class="flex items-center space-x-2 text-gray-600 bg-white p-3 rounded-lg shadow-md">
+                        <div class="flex items-center space-x-2 text-gray-600 bg-white p-3 rounded-lg shadow-md dark:bg-gray-700 dark:text-gray-300">
                             <div class="w-5 h-5 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></div>
                             <span class="font-medium">Processing image...</span>
                         </div>
@@ -451,6 +528,37 @@
                 sidebar.classList.add('-translate-x-full');
             }
         };
+
+        // Dark Mode Logic
+        const toggleDarkMode = () => {
+            document.documentElement.classList.toggle('dark');
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            updateDarkModeIcons(isDarkMode);
+        };
+
+        const updateDarkModeIcons = (isDarkMode) => {
+            if (isDarkMode) {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        };
+
+        // Initialize theme from local storage
+        const initializeTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                updateDarkModeIcons(true);
+            } else {
+                document.documentElement.classList.remove('dark');
+                updateDarkModeIcons(false);
+            }
+        };
+
 
         // Main render function to update all dynamic parts of the UI
         const renderAllUI = () => {
@@ -519,8 +627,9 @@
             });
 
             const payload = { contents: chatHistoryForApi };
-//Dont copy this.instead create you own for free in google ai studio.it is in free tier.
-            const apiKey = "AIzaSyBl5fGiL7eb8zvrZexCdO1oPVwtTQVm8L8";
+ ////Dont copy this.instead create you own for free in google ai studio.it is in free tier.
+            const apiKey = "AIzaSyBl5fGiL7eb8zvrZexCdO1oPVwtTQVm8L8";             
+
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
             try {
@@ -577,6 +686,9 @@
                 }
             } finally {
                 isLoading = false;
+                // Important: Reset isVoiceInputActive after AI response is handled
+                // This ensures subsequent typed inputs don't trigger voice output.
+                isVoiceInputActive = false;
                 renderAllUI(); // Hide loading indicator
             }
         };
@@ -593,7 +705,7 @@
             }
 
             recognition = new SpeechRecognition();
-            recognition.lang = 'en-US';
+            recognition.lang = languageSelect.value; // Use selected language
             recognition.interimResults = false; // Only return final results
             recognition.maxAlternatives = 1; // Get the most likely result
 
@@ -657,13 +769,13 @@
             synth.cancel();
 
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US'; // Set language
+            utterance.lang = languageSelect.value; // Use selected language
             utterance.rate = 1; // Speed of speech
             utterance.pitch = 1; // Pitch of voice
 
             // Optional: Choose a specific voice if available
             // let voices = synth.getVoices();
-            // let selectedVoice = voices.find(voice => voice.name === 'Google US English'); // Example
+            // let selectedVoice = voices.find(voice => voice.lang === languageSelect.value || voice.lang.startsWith(languageSelect.value.substring(0,2)));
             // if (selectedVoice) {
             //     utterance.voice = selectedVoice;
             // }
@@ -681,6 +793,16 @@
         sidebarOpenButton.addEventListener('click', toggleSidebar);
         sidebarCloseButton.addEventListener('click', toggleSidebar);
         micButton.addEventListener('click', startRecognition); // Attach to mic button
+        darkModeToggle.addEventListener('click', toggleDarkMode); // Attach dark mode toggle
+        languageSelect.addEventListener('change', () => {
+            // When language changes, if recording, stop and restart with new language
+            if (isRecording && recognition) {
+                recognition.stop();
+                startRecognition();
+            }
+        });
+
+        searchHistoryInput.addEventListener('input', renderSidebar); // Live search filtering
 
         addMediaButton.addEventListener('click', () => {
             isVoiceInputActive = false; // Reset flag when media button is clicked
@@ -733,7 +855,10 @@
         sendButton.addEventListener('click', handleSendMessage);
 
         // Initialize the application on DOMContentLoaded
-        document.addEventListener('DOMContentLoaded', loadChatsFromLocalStorage);
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTheme(); // Initialize theme first
+            loadChatsFromLocalStorage();
+        });
     </script>
 </body>
 </html>
